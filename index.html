@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RAWAN BANJIR</title>
+    <link rel="stylesheet" href="library/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="library/leaflet/leaflet.js"></script>
+    <script src="library/leaflet-providers-master/leaflet-providers.js"></script>
+    <script src="library/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([-7.767470, 110.495289], 13);
+
+            var baseLayers = {
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery').addTo(map),
+                'OSM Default': L.tileLayer.provider('OpenStreetMap.DE'),
+                'OSM France': L.tileLayer.provider('OpenStreetMap.France')
+            };
+
+
+            /* Memanggil Layer Rawan Banjir */
+            var RawanBanjir = L.geoJson(null, {
+                style: function(feature) {
+                    return {
+                        color: "black",
+                        fillColor: Keterangan[feature.properties.Keterangan],
+                        weight: 0.3,
+                        opacity: 0,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function( feature, layer ){
+                    layer.bindPopup(
+                        "Rawan Banjir : " + "<left>" + feature.properties.Keterangan + "</left>" + "<br>" +
+                        "Luas :" + "<left>" + feature.properties.Shape_Length + "</left>" + " km2"
+                        )
+                }
+            });
+            $.getJSON("data/rawan banjir Geo.json", function(data) {
+                RawanBanjir.addData(data);
+            });
+
+			/* Merubah Tampilan Warna Berdasar Atribut Klas Banjir */
+			var Keterangan = {
+				"Kerawanan Sangat Tinggi":"#ff2200",
+				"Kerawanan Tinggi":"#ff9900",
+				"Kerawanan Sedang":"#ffff00",
+				"Kerawanan Rendah":"#7aab00",
+				"Tidak Rawan":"#006100"
+			};
+
+            var mapLayers = {
+                'Rawan Banjir': RawanBanjir
+            };
+
+            L.control.layers(baseLayers, mapLayers).addTo(map);
+        </script>
+    </div>
+</body>
+
+</html>
